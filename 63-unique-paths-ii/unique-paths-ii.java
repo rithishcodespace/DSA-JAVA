@@ -1,30 +1,33 @@
 class Solution {
     public int uniquePathsWithObstacles(int[][] obstacleGrid) {
         int[][] dp = new int[obstacleGrid.length][obstacleGrid[0].length];
-        for(int i=0;i<obstacleGrid.length;i++){
-            Arrays.fill(dp[i],-1);
+        if(obstacleGrid[obstacleGrid.length-1][obstacleGrid[0].length-1] == 0){
+            dp[obstacleGrid.length-1][obstacleGrid[0].length-1] = 1;
         }
-        return f(0,0,obstacleGrid,dp);
-    }
-    public int f(int r, int c, int[][] grid, int[][] dp){
-        if(r == grid.length-1 && c == grid[0].length-1){
-            if(grid[r][c] == 1)return 0;
-            else return 1;
-        }
-        if(r >= grid.length || c >= grid[0].length){
-            return 0;
-        }
-        if(grid[r][c] == 1){
-            return 0;
+        else return 0;
+
+        for(int i=obstacleGrid.length-1;i>=0;i--){
+            for(int j=obstacleGrid[0].length-1;j>=0;j--){
+                if(i == obstacleGrid.length-1 && j == obstacleGrid[0].length-1){
+                    continue;
+                }
+
+                if(obstacleGrid[i][j] == 1)continue;
+
+                int bottom = 0, right = 0;
+
+                if(i+1 < obstacleGrid.length){
+                    bottom = dp[i+1][j];
+                }
+
+                if(j+1 < obstacleGrid[0].length){
+                    right = dp[i][j+1];
+                }
+
+                dp[i][j] = bottom+right;
+            }
         }
 
-        if(dp[r][c] != -1)return dp[r][c];
-
-        int bottom = f(r+1,c,grid, dp);
-        int right = f(r,c+1,grid, dp);
-
-        dp[r][c] = bottom+right;
-
-        return dp[r][c];
+        return dp[0][0];
     }
 }
