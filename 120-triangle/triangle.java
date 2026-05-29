@@ -1,23 +1,27 @@
 class Solution {
     public int minimumTotal(List<List<Integer>> triangle) {
         int[][] dp = new int[triangle.size()][triangle.size()];
-        for(int i=0;i<dp.length;i++){
-            Arrays.fill(dp[i],Integer.MAX_VALUE);
-        }
-        return recursion(0, 0, triangle, dp);
-    }
-    public int recursion(int i, int j, List<List<Integer>> triangle, int[][] dp){
-        if(i == triangle.size()-1){
-            return triangle.get(i).get(j);
+        
+        // base case
+        for(int i=0;i<dp[0].length;i++){
+            dp[dp.length-1][i] = triangle.get(dp.length-1).get(i);
         }
 
-        if(dp[i][j] != Integer.MAX_VALUE)return dp[i][j];
+        // bottom-up
+        for(int i=dp.length-2;i>=0;i--){
+            for(int j=triangle.get(i).size()-1;j>=0;j--){
+                int bottom = 0, diagonal = 0;
 
-        int down = triangle.get(i).get(j) + recursion(i+1, j, triangle, dp);
-        int diagonal = triangle.get(i).get(j) + recursion(i+1, j+1, triangle, dp);
+                bottom = dp[i+1][j];
 
-        dp[i][j] = Math.min(down, diagonal);
+                if(j+1 < dp[0].length){
+                    diagonal = dp[i+1][j+1];
+                }
 
-        return dp[i][j];
+                dp[i][j] = Math.min(bottom,diagonal) + triangle.get(i).get(j);
+            }
+        }
+
+        return dp[0][0];
     }
 }
