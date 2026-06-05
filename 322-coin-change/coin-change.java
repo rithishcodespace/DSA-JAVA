@@ -1,29 +1,33 @@
 class Solution {
     public int coinChange(int[] coins, int amount) {
-        Integer[][] dp = new Integer[coins.length+1][amount+1];
-        int cnt = solve(0, amount, coins, dp);
-        return (cnt == Integer.MAX_VALUE) ? -1 : cnt;
-    }
-    public int solve(int idx, int amount, int[] coins, Integer[][] dp){
-        if(idx >= coins.length || amount <= 0){
-            return (amount == 0) ? 0 : Integer.MAX_VALUE;
+        int[][] dp = new int[coins.length+1][amount+1];
+
+        // fill base case - optional (since int[][] default is 0)
+
+        for(int i=0;i<coins.length+1;i++){
+            dp[i][0] = 0;
         }
 
-        if(dp[idx][amount] != null){
-            return dp[idx][amount];
+        for(int i=1;i<amount+1;i++){
+            dp[coins.length][i] = Integer.MAX_VALUE;
         }
 
-        int pick = Integer.MAX_VALUE, not_pick = 0;
+        // try out all possibilities
+        for(int idx = coins.length-1;idx>=0;idx--){
+            for(int amnt = 0;amnt <= amount;amnt++){
+                int pick = Integer.MAX_VALUE, not_pick = 0;
 
-        if(coins[idx] <= amount){
-            int res = solve(idx, amount-coins[idx], coins, dp);
-            pick = (res != Integer.MAX_VALUE) ? res+1 : res;
+                if(coins[idx] <= amnt){
+                    int res = dp[idx][amnt-coins[idx]];
+                    pick = (res != Integer.MAX_VALUE) ? res + 1 : res;
+                }
+
+                not_pick = dp[idx+1][amnt];
+
+                dp[idx][amnt] = Math.min(pick,not_pick);
+            }
         }
 
-        not_pick = solve(idx+1, amount, coins, dp);
-
-        dp[idx][amount] = Math.min(pick,not_pick);
-
-        return dp[idx][amount];
+        return (dp[0][amount] == Integer.MAX_VALUE) ? -1 : dp[0][amount];
     }
 }
