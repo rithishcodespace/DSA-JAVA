@@ -15,7 +15,7 @@ class Solution {
             if(result>100000)
             break;
         }
-        System.out.print(result);
+        // System.out.print(result);
         return (n > 0) ? result : (1 / result);
     }
 }
