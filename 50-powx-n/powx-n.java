@@ -10,7 +10,8 @@ class Solution {
             return x;
         }
         double result = 1;
-        for (int i = 0; i < Math.abs((long)n); i++) {
+        if(n==Integer.MIN_VALUE) n=n+1;
+        for (int i = 0; i < Math.abs(n); i++) {
             result = result * x;
             if(result>100000)
             break;
