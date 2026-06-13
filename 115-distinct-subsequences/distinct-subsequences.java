@@ -1,35 +1,39 @@
-// question: find no.of subsequences of s, matches t (full string)
-// MEMOIZATION
-// O(m*n)
-// dp[m][n] ~ 8MB 
+// tabulation
+// i = i-1 (to include -1 index)
 
 class Solution {
     public int numDistinct(String s, String t) {
-        Integer[][] dp = new Integer[s.length()][t.length()];
-        return solve(s.length()-1, t.length()-1, s, t, dp);
-    }
-    public int solve(int idx1, int idx2, String s, String t, Integer[][] dp){
-        if(idx2 < 0){
-            return 1;
-        }
-        if(idx1 < 0){
-            return 0;
-        }
 
-        if(dp[idx1][idx2] != null)return dp[idx1][idx2];
+        int n = s.length();
+        int m = t.length();
 
-        int pick = 0, skip = 0;
+        int[][] dp = new int[n + 1][m + 1];
 
-        if(s.charAt(idx1) == t.charAt(idx2)){
-            pick = solve(idx1-1, idx2-1, s, t, dp);
-            skip = solve(idx1-1, idx2, s, t, dp);
-        }
-        else{
-            skip = solve(idx1-1, idx2, s, t, dp);
+        // idx2 < 0 => matched entire t (valid)
+        for(int i = 0; i <= n; i++) {
+            dp[i][0] = 1;
         }
 
-        dp[idx1][idx2] = pick+skip;
+        // idx1 < 0 && idx2 >= 0 (invalid)
+        for(int j = 1; j <= m; j++) {
+            dp[0][j] = 0;
+        }
 
-        return dp[idx1][idx2];
+        for(int i = 1; i <= n; i++) {
+            for(int j = 1; j <= m; j++) {
+
+                if(s.charAt(i - 1) == t.charAt(j - 1)) {
+                    int pick = dp[i - 1][j - 1];
+                    int skip = dp[i - 1][j];
+
+                    dp[i][j] = pick + skip;
+                }
+                else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+
+        return dp[n][m];
     }
 }
