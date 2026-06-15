@@ -1,30 +1,28 @@
 class Solution {
     public int maxProfit(int[] prices) {
-        Integer[][] dp = new Integer[prices.length][2];
-        return solve(0, 0, prices, dp);
-    }
-    public int solve(int idx, int canIsell, int[] prices, Integer[][] dp){
-        if(idx >= prices.length){
-            return 0;
+        int[][] dp = new int[prices.length+1][2];
+
+        // fill base case
+        dp[prices.length][0] = dp[prices.length][1] = 0;
+
+        // explore all possiblities
+        for(int i=prices.length-1;i>=0;i--){
+            for(int j=0;j<=1;j++){
+                int wish = 0, not_wish = 0;
+
+                if(j == 1){ // sell - gain
+                    wish = prices[i] + dp[i+1][0];
+                    not_wish = 0 + dp[i+1][1];
+                }
+                else{ // buy - lost
+                    wish = -prices[i] + dp[i+1][1];
+                    not_wish = 0 + dp[i+1][0];
+                }
+
+                dp[i][j] = Math.max(wish, not_wish);
+            }
         }
 
-        int wish = 0, not_wish = 0;
-
-        if(dp[idx][canIsell] != null){
-            return dp[idx][canIsell];
-        }
-
-        if(canIsell == 1){ // sell - gain
-            wish = prices[idx] + solve(idx+1, 0, prices, dp);
-            not_wish = 0 + solve(idx+1, 1, prices, dp);
-        }
-        else{ // buy - lost
-            wish = -prices[idx] + solve(idx+1, 1, prices, dp);
-            not_wish = 0 + solve(idx+1, 0, prices, dp);
-        }
-
-        dp[idx][canIsell] = Math.max(wish, not_wish);
-
-        return dp[idx][canIsell];
+        return dp[0][0];
     }
 }
