@@ -1,32 +1,32 @@
-// prevIdx => prevIdx+1 (to have -1 as prevIdx)
-// use +1 only to access elements in dp table, not nums[]
+// prev = prev+1 ]
+// curr = curr+1 ] inside dp table (to avoid -1 and n)
 
 class Solution {
     public int lengthOfLIS(int[] nums) {
-        Integer[][] dp = new Integer[nums.length][nums.length+1];
-        return solve(0, -1, nums, dp);
-    }
-    public int solve(int idx, int prevIdx, int[] nums, Integer[][] dp){
-        if(idx >= nums.length){
-            return 0;
+        int n = nums.length;
+        int[] curr = new int[n+1];
+        int[] next = new int[n+1];
+
+        // base case
+        // dp[n][0,..,n-1] = 0;
+
+        // i goes from n-1 to 0
+        for (int currIdx = n - 1;currIdx >= 0;currIdx--) {
+            for (int prev = currIdx - 1; prev >= -1; prev--) {
+
+                int pick = 0;
+
+                if (prev == -1 || nums[currIdx] > nums[prev]) {
+                    pick = 1 + next[currIdx + 1];
+                }
+
+                int notPick = 0 + next[prev + 1];
+
+                curr[prev + 1] = Math.max(pick, notPick);
+            }
+            next = curr.clone();
         }
 
-        if(dp[idx][prevIdx+1] != null){
-            return dp[idx][prevIdx+1];
-        }
-
-        int pick = 0, not_pick = 0;
-
-        // pick
-        if(prevIdx == -1 || nums[prevIdx] < nums[idx]){
-            pick = 1 + solve(idx+1, idx, nums, dp);
-        }
-
-        // not-pick
-        not_pick = 0 + solve(idx+1, prevIdx, nums, dp);
-
-        dp[idx][prevIdx+1] = Math.max(pick, not_pick);
-
-        return dp[idx][prevIdx+1];
+        return next[0];
     }
 }
