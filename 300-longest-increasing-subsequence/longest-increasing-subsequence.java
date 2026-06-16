@@ -1,32 +1,20 @@
-// prev = prev+1 ]
-// curr = curr+1 ] inside dp table (to avoid -1 and n)
-
 class Solution {
-    public int lengthOfLIS(int[] nums) {
-        int n = nums.length;
-        int[] curr = new int[n+1];
-        int[] next = new int[n+1];
-
-        // base case
-        // dp[n][0,..,n-1] = 0;
-
-        // i goes from n-1 to 0
-        for (int currIdx = n - 1;currIdx >= 0;currIdx--) {
-            for (int prev = currIdx - 1; prev >= -1; prev--) {
-
-                int pick = 0;
-
-                if (prev == -1 || nums[currIdx] > nums[prev]) {
-                    pick = 1 + next[currIdx + 1];
-                }
-
-                int notPick = 0 + next[prev + 1];
-
-                curr[prev + 1] = Math.max(pick, notPick);
-            }
-            next = curr.clone();
+    public int lengthOfLIS(int[] arr) {
+        int max = 1;
+        int[] dp = new int[arr.length];
+        // each element has minimum len 1
+        for(int i=0;i<arr.length;i++){
+            dp[i] = 1;
         }
-
-        return next[0];
+        // check all previous index for each index
+        for(int curr=0;curr<arr.length;curr++){
+            for(int prev = 0;prev < curr;prev++){
+                if(arr[prev] < arr[curr]){
+                    dp[curr] = Math.max(1+dp[prev], dp[curr]);
+                    max = Math.max(max,dp[curr]);
+                }
+            }
+        }
+        return max;
     }
 }
