@@ -1,12 +1,12 @@
-// optimize by memoizing isPalindrome
+// optimize by memoizing isPalindrome (cache true and false)
 
 class Solution {
     List<List<String>> ans = new ArrayList<>();
     List<String> list = new ArrayList<>();
-    boolean[][] dp;
+    Boolean[][] dp;
 
     public List<List<String>> partition(String s) {
-        dp = new boolean[s.length()][s.length()];
+        dp = new Boolean[s.length()][s.length()];
         solve(0, s);
         return ans;
     }
@@ -19,8 +19,8 @@ class Solution {
 
         for(int i=idx;i<s.length();i++){
             String substr = s.substring(idx, i+1);
-            if(dp[idx][i] || isPalindrome(substr)){
-                dp[idx][i] = true;
+            if(dp[idx][i] == null)dp[idx][i] = isPalindrome(substr);
+            if(dp[idx][i]){
                 list.add(substr);
                 solve(i+1, s);
                 // backtrack
