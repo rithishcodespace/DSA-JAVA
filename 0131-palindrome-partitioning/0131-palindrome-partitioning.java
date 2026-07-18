@@ -1,12 +1,12 @@
-// Time Complexity  : O(n × 2^n)
-// Space Complexity : O(n)          // excluding output
-// Space Complexity : O(n × 2^n)    // including output
+// optimize by memoizing isPalindrome
 
 class Solution {
     List<List<String>> ans = new ArrayList<>();
     List<String> list = new ArrayList<>();
+    boolean[][] dp;
 
     public List<List<String>> partition(String s) {
+        dp = new boolean[s.length()][s.length()];
         solve(0, s);
         return ans;
     }
@@ -19,7 +19,8 @@ class Solution {
 
         for(int i=idx;i<s.length();i++){
             String substr = s.substring(idx, i+1);
-            if(isPalindrome(substr)){
+            if(dp[idx][i] || isPalindrome(substr)){
+                dp[idx][i] = true;
                 list.add(substr);
                 solve(i+1, s);
                 // backtrack
