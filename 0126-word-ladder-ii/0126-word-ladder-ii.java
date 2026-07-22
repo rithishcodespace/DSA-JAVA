@@ -1,86 +1,75 @@
 class Solution {
 
-    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList){
+    List<List<String>> paths = new ArrayList<>();
 
-        List<List<String>> paths = new ArrayList<>();
-
-        // visited, contains - O(1) check for wordList words
-        Set<String> dict = new HashSet<>(wordList);
-
-        // destination can't be reached via wordList
-        if(!dict.contains(endWord)){
-            return paths;
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        HashSet<String> dict = new HashSet<>();
+        for(String str : wordList){
+            dict.add(str);
         }
+        if(!dict.contains(endWord))return paths;
 
-        Map<String, List<String>> parent = new HashMap<>(); // to create connections (graph)
+        HashMap<String, Integer> levelMap = new HashMap<>();
+        HashMap<String, List<String>> parentMap = new HashMap<>();
 
-        Map<String, Integer> level = new HashMap<>(); // to mark level of a word and as visited
+        Queue<String> queue = new LinkedList<>();
+        queue.add(beginWord);
+        levelMap.put(beginWord, 0);
 
-        Queue<String> q = new LinkedList<>(); // contains current word, not the entire path
+        while(!queue.isEmpty()){
+            String word = queue.poll();
 
-        q.add(beginWord);
-        level.put(beginWord, 0);
+            if(word.equals(endWord)){
+                continue;
+            }
 
-        while(!q.isEmpty()){
-
-            String word = q.poll();
-            int currLevel = level.get(word);
             char[] arr = word.toCharArray();
+            int currLevel = levelMap.get(word);
 
-            for(int i = 0; i < arr.length; i++){
-                char old = arr[i];
-                for(char ch = 'a'; ch <= 'z'; ch++){
-                    if (ch == old)continue;
-
-                    arr[i] = ch;
-
-                    String next = new String(arr);
-
-                    if(!dict.contains(next))
+            for(int i=0;i<arr.length;i++){
+                char org = arr[i];
+                for(int j=0;j<26;j++){
+                    arr[i] = ((char)(j+97));
+                    String newWord = new String(arr);
+                    if(!dict.contains(newWord)){
                         continue;
-
-                    if(!level.containsKey(next)) {
-
-                        level.put(next, currLevel + 1);
-                        q.offer(next);
-                        parent.put(next, new ArrayList<>());
-                        parent.get(next).add(word);
-
                     }
-                    else if(level.get(next) == currLevel + 1) { // prevents reusable already used words in the path
-                        parent.get(next).add(word);
+                    else if(!levelMap.containsKey(newWord)){
+                        queue.add(newWord);
+                        levelMap.put(newWord, currLevel+1);
+                        parentMap.put(newWord, new ArrayList<>());
+                        parentMap.get(newWord).add(word);
+                    }
+                    else if(currLevel+1 == levelMap.get(newWord)){
+                        parentMap.get(newWord).add(word);
                     }
                 }
+                arr[i] = org;
 
-                arr[i] = old; // backtrack
             }
         }
 
-        if(!level.containsKey(endWord))return paths;
+        if(!levelMap.containsKey(endWord))return paths;
 
-        List<String> path = new ArrayList<>();
-
-        dfs(endWord, beginWord, parent, path, paths);
+        buildPaths(endWord, beginWord, parentMap, new ArrayList<>());
 
         return paths;
     }
-
-    // rebuild paths from graph - from endWord to startWord
-    public void dfs(String word, String beginWord, Map<String, List<String>> parent, List<String> path, List<List<String>> paths) {
-
+    public void buildPaths(String word, String startWord, Map<String,List<String>> parentMap, List<String> path){
         path.add(word);
 
-        if (word.equals(beginWord)) {
+        if(word == startWord){
             List<String> temp = new ArrayList<>(path);
             Collections.reverse(temp);
             paths.add(temp);
-        } 
-        else {
-            for (String p : parent.getOrDefault(word, new ArrayList<>())) {
-                dfs(p, beginWord, parent, path, paths);
+        }
+        else{
+            for(String parent : parentMap.getOrDefault(word, new ArrayList<>())){
+                buildPaths(parent, startWord, parentMap, path);
             }
         }
 
-        path.remove(path.size() - 1);
+        // backtrack
+        path.remove(path.size()-1);
     }
 }
