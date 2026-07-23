@@ -10,6 +10,6 @@ class Solution {
         int left = preorder(root.left, Math.max(max, root.val));
         int right = preorder(root.right, Math.max(max, root.val));
 
-        return isGood + left + right;
+        return left+isGood+right;
     }
 }
