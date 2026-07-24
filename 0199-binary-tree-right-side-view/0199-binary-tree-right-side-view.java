@@ -1,26 +1,19 @@
-// compare level of the tree with list size()
-
-// tc: O(n)
-// sc: O(tree height)
-
 class Solution {
-    List<Integer> rv = new ArrayList<>();
+
+    List<Integer> list = new ArrayList<>();
 
     public List<Integer> rightSideView(TreeNode root) {
-        postorder(root, 0);
-        return rv;
+        preorder(root, 0);
+        return list;
     }
 
-    public void postorder(TreeNode root, int level){
+    public void preorder(TreeNode root, int level){
         if(root == null)return;
 
-        // adding first time to current level (dummy)
-        if(rv.size() <= level) rv.add(-1);
+        if(list.size() <= level)list.add(root.val);
+        else list.set(level, root.val);
 
-        postorder(root.left, level+1);
-        postorder(root.right, level+1);
-
-        // updating the nodes in the same level (last one survives)
-        rv.set(level,root.val);
+        preorder(root.left, level+1);
+        preorder(root.right, level+1);
     }
 }
