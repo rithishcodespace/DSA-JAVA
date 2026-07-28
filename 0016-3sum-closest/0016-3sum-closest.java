@@ -8,7 +8,7 @@ class Solution {
 
             while(l<r){
                 int sum = nums[i]+nums[l]+nums[r];
-                int diff = target-sum, ans_diff = target-ans;
+                int diff = Math.abs(target-sum), ans_diff = Math.abs(target-ans);
                 
                 if(sum == target){
                     return sum;
