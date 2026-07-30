@@ -6,18 +6,21 @@ class Solution {
             int mid = l+(r-l)/2;
 
             if(nums[mid] == target)return mid;
-
-            if(nums[l] <= nums[mid]){
+            else if(nums[l] <= nums[mid]){
                 if(target >= nums[l] && target <= nums[mid]){
                     r=mid;
                 }
-                else l=mid+1;
+                else{
+                    l=mid+1;
+                }
             }
             else{
                 if(target >= nums[mid] && target <= nums[r]){
                     l=mid;
                 }
-                else r=mid-1;
+                else{
+                    r=mid-1;
+                }
             }
         }
 
