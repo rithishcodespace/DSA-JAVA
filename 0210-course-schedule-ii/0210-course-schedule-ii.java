@@ -1,55 +1,52 @@
 // ques: Can I arrange all the courses so every prerequisite comes first?
-// kahn toposort algo
+// dfs topo sort
 
 class Solution {
-    public int[] findOrder(int numCourses, int[][] prerequisites) {
-        List<Integer> topo = new ArrayList<>();
+    
+    public int[] findOrder(int numCourses, int[][] prerequisites){
+        int[] visited = new int[numCourses];
+        Stack<Integer> stack = new Stack<>();
 
-        // create adjlist + indegree
-        int[] indegree = new int[numCourses];
+        // create adj list
         List<List<Integer>> adj = new ArrayList<>();
         for(int i=0;i<numCourses;i++)adj.add(new ArrayList<>());
-        for(int i=0;i<prerequisites.length;i++){
-            int u = prerequisites[i][0];
-            int v = prerequisites[i][1];
 
-            adj.get(v).add(u);
+        for(int[] edge : prerequisites){
+            int u = edge[1];
+            int v = edge[0];
 
-            indegree[u]++;
+            adj.get(u).add(v);
         }
 
-        // push nodes with indegree 0
-        Queue<Integer> queue = new LinkedList<>();
-        for(int i=0;i<numCourses;i++){
-            if(indegree[i] == 0){
-                queue.add(i);
+        // dfs
+        for (int i = 0; i < numCourses; i++) {
+            if (visited[i] == 0) {
+                dfs(i, visited, adj, stack);
             }
         }
 
-        // remove their childs
-        while(!queue.isEmpty()){
-            int node = queue.poll();
-            topo.add(node);
-
-            for(int neigh : adj.get(node)){
-                indegree[neigh]--;
-
-                if(indegree[neigh] == 0){
-                    queue.add(neigh);
-                }
-            }
-        }
-
-        // build ans array
-
-        if(topo.size() != numCourses)return new int[]{};
+        if(stack.size() != numCourses)return new int[]{};
 
         int idx = 0;
-        int[] ans = new int[topo.size()];
-        for(int x : topo){
-            ans[idx++] = x;
+        int[] ans = new int[numCourses];
+
+        while(!stack.isEmpty()){
+            ans[idx++] = stack.pop();
         }
 
         return ans;
+    }
+    public void dfs(int u, int[] visited, List<List<Integer>> adj, Stack<Integer> stack){
+        visited[u] = 1;
+
+        for(int v : adj.get(u)){
+            if(visited[v] == 0){
+                dfs(v, visited, adj, stack);
+            }
+            else if(visited[v] == 1)return;
+        }
+
+        visited[u] = 2;
+        stack.add(u);
     }
 }
