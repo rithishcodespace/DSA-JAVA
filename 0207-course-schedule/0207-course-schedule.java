@@ -1,46 +1,46 @@
-// ques: Can I arrange all the courses so every prerequisite comes first?
-// kahn toposort algo
+// recursive topo sort
+// 0 → not visited
+// 1 → currently visiting
+// 2 → completely finished
 
 class Solution {
+    
     public boolean canFinish(int numCourses, int[][] prerequisites) {
-        List<Integer> topo = new ArrayList<>();
-
-        // create adjlist + indegree
-        int[] indegree = new int[numCourses];
+        int[] visited = new int[numCourses];
+        // create adj list
         List<List<Integer>> adj = new ArrayList<>();
         for(int i=0;i<numCourses;i++)adj.add(new ArrayList<>());
-        for(int i=0;i<prerequisites.length;i++){
-            int u = prerequisites[i][0];
-            int v = prerequisites[i][1];
 
-            adj.get(v).add(u);
+        for(int[] edge : prerequisites){
+            int u = edge[1];
+            int v = edge[0];
 
-            indegree[u]++;
+            adj.get(u).add(v);
         }
 
-        // push nodes with indegree 0
-        Queue<Integer> queue = new LinkedList<>();
-        for(int i=0;i<numCourses;i++){
-            if(indegree[i] == 0){
-                queue.add(i);
-            }
-        }
-
-        // remove their childs
-        while(!queue.isEmpty()){
-            int node = queue.poll();
-            topo.add(node);
-
-            for(int neigh : adj.get(node)){
-                indegree[neigh]--;
-
-                if(indegree[neigh] == 0){
-                    queue.add(neigh);
+        // dfs
+        for (int i = 0; i < numCourses; i++) {
+            if (visited[i] == 0) {
+                if(dfs(i, visited, adj)){
+                    return false;
                 }
             }
         }
 
-        // checks if there is a cycle and a correct learning order exists ?
-        return topo.size() == numCourses ? true : false;
+        return true;
+    }
+    public boolean dfs(int u, int[] visited, List<List<Integer>> adj){
+        visited[u] = 1;
+
+        for(int v : adj.get(u)){
+            if(visited[v] == 0){
+                if(dfs(v, visited, adj))return true;
+            }
+            else if(visited[v] == 1)return true;
+        }
+
+        visited[u] = 2;
+
+        return false;
     }
 }
