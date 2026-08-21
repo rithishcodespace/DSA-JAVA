@@ -1,25 +1,38 @@
+// binary search
+
 class Solution {
     public int lengthOfLIS(int[] nums) {
-        Integer[][] dp = new Integer[nums.length][nums.length];
-        return solve(0, -1, nums, dp);
+        List<Integer> list = new ArrayList<>();
+
+        for(int i=0;i<nums.length;i++){
+            int num = nums[i];
+            if(list.isEmpty() || list.get(list.size()-1) < num){
+                list.add(num);
+            }
+            else{ // instead of creating new list from scratch, place num in lower bound index
+                int idx = lowerBound(0, list.size()-1, num, list);
+                list.set(idx, num);
+            }        
+        }
+
+        return list.size();
     }
-    public int solve(int idx, int prevIdx, int[] nums, Integer[][] dp){
-        if(idx >= nums.length){
-            return 0;
+    // lb => index >= num
+    public int lowerBound(int l, int r, int target, List<Integer> list){
+        int idx = 0;
+
+        while(l<=r){
+            int mid = l + (r-l)/2;
+
+            if(list.get(mid) >= target){
+                idx=mid;
+                r=mid-1;
+            }
+            else{
+                l=mid+1;
+            }
         }
 
-        if(prevIdx != -1 && dp[idx][prevIdx] != null)return dp[idx][prevIdx];
-
-        int pick = 0, not_pick = 0;
-
-        if(prevIdx == -1 || nums[idx] > nums[prevIdx]){
-            pick = 1 + solve(idx+1, idx, nums, dp);
-        }
-
-        not_pick = solve(idx+1, prevIdx, nums, dp);
-
-        if(prevIdx != -1)dp[idx][prevIdx] = Math.max(pick, not_pick);
-
-        return Math.max(pick, not_pick);
+        return idx;
     }
 }
