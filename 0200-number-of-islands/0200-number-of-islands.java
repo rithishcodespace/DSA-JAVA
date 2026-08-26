@@ -1,36 +1,34 @@
-// connnect lands via dfs
+// flood fill
 
 class Solution {
-
-    int[][] dir = {{-1,0},{1,0},{0,-1},{0,1}};
+    int[][] dir = {{-1,0},{1,0},{0,1},{0,-1}};
+    int[][] visited;
 
     public int numIslands(char[][] grid) {
-        int count = 0;
-        int[][] visited = new int[grid.length][grid[0].length];
+        int islands = 0;
+        visited = new int[grid.length][grid[0].length];
 
         for(int i=0;i<grid.length;i++){
             for(int j=0;j<grid[0].length;j++){
-                if(visited[i][j] == 0 && grid[i][j] == '1'){
-                    // start creating island
-                    count++;
-                    dfs(i, j, grid, visited);
+                if(grid[i][j] == '1' && visited[i][j] == 0){
+                    islands++;
+                    dfs(i, j, grid);
                 }
             }
         }
 
-        return count;
+        return islands;
     }
-    public void dfs(int r, int c, char[][] grid, int[][] visited){
+    public void dfs(int r, int c, char[][] grid){
         visited[r][c] = 1;
-        
 
         for(int[] d : dir){
             int nr = r + d[0];
             int nc = c + d[1];
 
-            if(nr >= 0 && nr < grid.length && nc >= 0 && nc < grid[0].length && grid[nr][nc] == '1' && visited[nr][nc] == 0){
-                dfs(nr, nc, grid, visited);
+            if(nr >= 0 && nr < grid.length && nc >= 0 && nc < grid[0].length && visited[nr][nc] == 0 && grid[nr][nc] == '1'){
+                dfs(nr, nc, grid);
             }
         }
-    } 
+    }
 }
