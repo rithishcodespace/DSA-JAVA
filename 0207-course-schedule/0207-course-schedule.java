@@ -1,15 +1,12 @@
-// we are just checking is it a DAG via toposort
+// we are just checking is it a DAG via toposort (kahn)
 
-// 0 -> not visited
-// 1 -> currently visiting
-// 2 -> visited
-
-// If we encounter a cycle, we stop
+// toposort.size() == n ? true : false;
 
 class Solution {
     public boolean canFinish(int numCourses, int[][] prerequisites) {
-        // create adj list
+        // create adj list + indegree
 
+        int[] in_degree = new int[numCourses];
         List<List<Integer>> adj_list = new ArrayList<>();
 
         for(int i=0;i<numCourses;i++){
@@ -20,37 +17,39 @@ class Solution {
             int u = prerequisites[i][0];
             int v = prerequisites[i][1];
 
+            in_degree[v]++;
+
             adj_list.get(u).add(v);
         }
 
-        // recursive topo sort
+        // kahn topo sort 
 
-        int[] visited = new int[numCourses];
-        
-        for(int i=0;i<numCourses;i++){
-            if(!dfs(i, adj_list, visited)){
-                return false;
-            }
-        }
+        List<Integer> topo = new ArrayList<>();
+        bfs(in_degree, adj_list, topo);
 
-        return true;
+        return (topo.size() == numCourses) ? true : false;
     }
-    public boolean dfs(int u, List<List<Integer>> adj_list, int[] visited){
-        visited[u] = 1;
+    public void bfs(int[] in_degree, List<List<Integer>> adj_list, List<Integer> topo){
+        // insert node with 0 indegree
+        Queue<Integer> queue = new LinkedList<>();
 
-        for(int v : adj_list.get(u)){
-            if(visited[v] == 0){
-                if(!dfs(v, adj_list, visited)){
-                    return false;
-                }
-            }
-            else if(visited[v] == 1){
-                return false;
+        for(int i=0;i<adj_list.size();i++){
+            if(in_degree[i] == 0){
+                queue.add(i);
             }
         }
-        
-        visited[u] = 2;
 
-        return true;
+        // bfs
+        while(!queue.isEmpty()){
+            int u = queue.poll();
+
+            for(int v : adj_list.get(u)){
+                in_degree[v]--;
+
+                if(in_degree[v] == 0)queue.add(v);
+            }
+
+            topo.add(u);
+        }
     }
 }
