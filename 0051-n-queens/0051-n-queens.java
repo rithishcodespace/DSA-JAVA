@@ -1,41 +1,23 @@
-// every recursive problem moves row downward
-// every safe places moves col forward
-
-// Time Complexity:
-// There are at most N choices for each of the N columns.
-// In the worst case, the recursion explores O(N!) valid placements.
-// For each placement, isSafe() checks at most 3 directions, each taking O(N).
-// Therefore, overall time complexity is O(N × N!).
-
-// Space Complexity:
-// O(N^2) for the chess board.
-// O(N) recursion stack (maximum one recursive call per column).
-// Excluding the output, auxiliary space is O(N^2).
-// Including the recursion stack: O(N^2 + N) = O(N^2).
-
 class Solution {
-
-    List<List<String>> ans = new ArrayList<>();
-    String[][] board;
-
     public List<List<String>> solveNQueens(int n) {
-        // build the chess board
-        board = new String[n][n];
+        char[][] board = new char[n][n];
+        List<List<String>> ans = new ArrayList<>();
+
         for(int i=0;i<n;i++){
-            Arrays.fill(board[i],".");
+            Arrays.fill(board[i], '.');
         }
-        // recursion
-        solve(0);
+
+        solve(0, board, ans);
+
         return ans;
     }
-
-    public void solve(int col){
-        // base case 
+    public void solve(int col, char[][] board, List<List<String>> ans){
+        // base case
         if(col == board.length){
             List<String> temp = new ArrayList<>();
             for(int i=0;i<board.length;i++){
                 StringBuilder row = new StringBuilder();
-                for(int j=0;j<board.length;j++){
+                for(int j=0;j<board[0].length;j++){
                     row.append(board[i][j]);
                 }
                 temp.add(row.toString());
@@ -44,31 +26,36 @@ class Solution {
             return;
         }
 
-        // visit all rows of the current col
+        // try to place a queen in the current col
         for(int i=0;i<board.length;i++){
-            if(isSafe(i, col)){
-                board[i][col] = "Q";
-                solve(col+1);
-                // backtrack
-                board[i][col] = ".";
+            if(isSafe(i, col, board)){
+                board[i][col] = 'Q';
+                solve(col+1, board, ans);
+                board[i][col] = '.'; // backtrack
             }
         }
     }
-
-    public boolean isSafe(int r, int c){
+    public boolean isSafe(int r, int c, char[][] board){
         // top-left
-        for(int i=r,j=c; i>=0 && j>=0; i--,j--){
-            if(board[i][j].equals("Q"))return false;
+        for(int i=r, j=c;i>=0 && j>=0;i--,j--){
+            if(board[i][j] == 'Q'){
+                return false;
+            }
         }
         // left
         for(int i=c;i>=0;i--){
-            if(board[r][i].equals("Q"))return false;
+            if(board[r][i] == 'Q'){
+                return false;
+            }
         }
         // bottom-left
-        for(int i=r,j=c ;i<board.length && j>=0 ;i++,j--){
-            if(board[i][j].equals("Q"))return false;
+        for(int i=r, j=c;i<board.length && j>=0;i++, j--){
+            if(board[i][j] == 'Q'){
+                return false;
+            }
         }
-        // bottom-right, right - not needed, since we placing queen from left -> right (it will hanlde it via left dir)
+        // top-right, bottom-right, right need not to be check since we place queens from left to right
+        // top and bottom need not to be checked since we place one queen per row
 
         return true;
     }
