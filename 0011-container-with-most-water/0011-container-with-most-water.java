@@ -1,18 +1,21 @@
-// reduces the lowest height pointer, hoping to get a higher pointer in future
-
 class Solution {
     public int maxArea(int[] height) {
-        int l=0, r=height.length-1, max=0;
+        int l=0, r=height.length-1, maxArea=0;
+
         while(l<r){
-            int area = (r-l) * Math.min(height[l], height[r]);
-            max = Math.max(area,max);
-            if(height[l] >= height[r]){
+            int length = Math.min(height[l], height[r]);
+            int breadth = r-l;
+
+            int area = length*breadth;
+
+            maxArea = Math.max(maxArea, area);
+
+            if(height[l] > height[r]){
                 r--;
             }
-            else{
-                l++;
-            }
+            else l++;
         }
-        return max;
+
+        return maxArea;
     }
 }
