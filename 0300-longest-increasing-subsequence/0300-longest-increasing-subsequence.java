@@ -3,6 +3,7 @@
 
 class Solution {
     public int lengthOfLIS(int[] nums) {
+        int max = 1;
         int[] dp = new int[nums.length];
 
         Arrays.fill(dp, 1); // each index is a lis of length 1
@@ -12,11 +13,12 @@ class Solution {
                 if(nums[j] < nums[i]){
                     if(dp[j]+1 > dp[i]){
                         dp[i] = dp[j]+1;
+                        max = Math.max(dp[i], max);
                     }
                 }
             }
         }
 
-        return dp[nums.length-1];
+        return max;
     }
 }
