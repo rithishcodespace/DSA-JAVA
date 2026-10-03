@@ -1,54 +1,54 @@
-// when you encounter '-', you need to remember that the next integer is neg
-
 class Solution {
     public int calculate(String s) {
-        int ans = 0;
+        int res = 0;
         int num = 0;
         int sign = 1;
 
         Stack<Integer> stack = new Stack<>();
 
-        for(char ch : s.toCharArray()){
-            if(Character.isDigit(ch)){
-                num = num * 10 + (ch-'0');
+        for(int i=0;i<s.length();i++){
+            char ch = s.charAt(i);
+
+            if(ch >= '0' && ch <= '9'){ // construct number
+                num = num*10 + (ch-48);
             }
             else if(ch == '+'){
-                ans = ans + sign*num;
+                res += num*sign; // if prev sign is (-), the current num be added as -num
 
-                num=0;
-                sign=1; // + is saved for next creating num
+                num = 0; // reset to build new number
+                sign = 1; // save sign to add
             }
             else if(ch == '-'){
-                ans = ans + sign*num;
+                res += num*sign; // if prev sign is (-), the current num be added as -num
 
-                num=0;
-                sign=-1; // - is saved for next creating num
+                num = 0; // reset to build new number
+                sign = -1; // save sign to add
             }
             else if(ch == '('){
-                // save info had before '('
-                stack.push(ans);
+                // save the available result and sign 
+                stack.push(res);
                 stack.push(sign);
 
-                // start from fresh inside ()
-                num=0;
-                ans=0;
-                sign=1;
+                // start a fresh result within the ()
+                res = 0;
+                num = 0;
+                sign = 1;
             }
             else if(ch == ')'){
-                ans = ans + sign*num;
+                res += num*sign;
 
-                int prevSign = stack.pop();
-                int prevAns = stack.pop();
+                // add existing result to the current result
+                int prevSign = stack.pop(), prevRes = stack.pop();
 
-                ans = prevAns + prevSign*ans;
+                res = prevRes + (res*prevSign);
 
                 num=0;
                 sign=1;
             }
         }
 
-        ans = ans + sign*num; // remaining (no bracket case)
+        res += num*sign;
 
-        return ans;
+        return res;
     }
 }
