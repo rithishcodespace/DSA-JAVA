@@ -1,27 +1,19 @@
-// slow and fast pointers
-
-// 1 -> 2 -> null <- 3 <- 4
-// 5 -> 6 -> null <- 7 <- 8 <- 9
-
-// tc: O(n)
-// sc: O(1)
+// fast and slow pointers
 
 class Solution {
     public void reorderList(ListNode head) {
-        if(head == null || head.next == null)return;
+        // reach the first half
+        ListNode slow = head, fast = head;
 
-        ListNode slow = head;
-        ListNode fast = head;
-
-        // seperate first and second half
-        while(fast.next != null && fast.next.next != null){
+        while(fast != null && fast.next != null && fast.next.next != null){
             slow = slow.next;
             fast = fast.next.next;
         }
 
-        // reverse second  half
+        // reverse the second half
         ListNode curr = slow.next, prev = null;
-        slow.next = null; 
+        slow.next = null;
+
         while(curr != null){
             ListNode next = curr.next;
             curr.next = prev;
@@ -30,24 +22,19 @@ class Solution {
             curr = next;
         }
 
-        // iterate from both ends and build the list
+        // connect nodes from two linkedlist -> first and second half
         ListNode head1 = head;
         ListNode head2 = prev;
 
         while(head1 != null && head2 != null){
-            ListNode next1 = head1.next;
-            ListNode next2 = head2.next;
+            ListNode temp1 = head1.next;
+            ListNode temp2 = head2.next;
 
             head1.next = head2;
-            head2.next = next1;
+            head2.next = temp1;
 
-            head1 = next1;
-            head2 = next2;
-        }
-
-        // attach remaining
-        if(head2 != null){
-            head1.next = head2;
+            head1 = temp1;
+            head2 = temp2;
         }
     }
 }
