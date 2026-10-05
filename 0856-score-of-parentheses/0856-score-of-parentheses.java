@@ -3,7 +3,7 @@
 class Solution {
     public int scoreOfParentheses(String s) {
         Stack<Integer> stack = new Stack<>();
-        stack.push(0);
+        stack.push(0); // parent level - answer will be accumulated here
 
         for(int i=0;i<s.length();i++){
             char br = s.charAt(i);
@@ -16,14 +16,13 @@ class Solution {
 
                 int value = 0;
 
-                if(inside == 0){ // ()
+                if(inside == 0){
                     value = 1;
                 }
-                else if(inside >= 1){ // (A)
+                else if(inside >= 1){
                     value = inside*2;
                 }
 
-                // add this score to parent level
                 int parent = stack.pop();
                 stack.push(parent+value);
             }
