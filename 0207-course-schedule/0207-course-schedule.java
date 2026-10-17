@@ -1,55 +1,44 @@
-// we are just checking is it a DAG via toposort (kahn)
+// kahn algo - based on indegree
+// true if all vertices can be arranged else false
 
-// toposort.size() == n ? true : false;
+// return stack.size() == n ? true : false
+// Since queue becomes empty if cycle exists before visiting all nodes
 
 class Solution {
     public boolean canFinish(int numCourses, int[][] prerequisites) {
-        // create adj list + indegree
+        int[] indegree = new int[numCourses];
 
-        int[] in_degree = new int[numCourses];
-        List<List<Integer>> adj_list = new ArrayList<>();
+        // create adj list and indegree
+        List<List<Integer>> adj = new ArrayList<>();
+        for(int i=0;i<numCourses;i++)adj.add(new ArrayList<>());
 
+        for(int[] edge : prerequisites){
+            int v = edge[0], u = edge[1];
+            indegree[v]++;
+
+            adj.get(u).add(v);
+        }
+
+        // kahn algo
+        Queue<Integer> q = new LinkedList<>();
+        Stack<Integer> stack = new Stack<>();
+
+        // insert nodes with 0 indegree
         for(int i=0;i<numCourses;i++){
-            adj_list.add(new ArrayList<>());
+            if(indegree[i] == 0)q.add(i);
         }
 
-        for(int i=0;i<prerequisites.length;i++){
-            int u = prerequisites[i][0];
-            int v = prerequisites[i][1];
+        while(!q.isEmpty()){
+            int u = q.poll();
+            stack.push(u);
 
-            in_degree[v]++;
+            for(int v : adj.get(u)){
+                indegree[v]--;
 
-            adj_list.get(u).add(v);
-        }
-
-        // kahn topo sort 
-
-        List<Integer> topo = new ArrayList<>();
-        bfs(in_degree, adj_list, topo);
-
-        return (topo.size() == numCourses) ? true : false;
-    }
-    public void bfs(int[] in_degree, List<List<Integer>> adj_list, List<Integer> topo){
-        // insert node with 0 indegree
-        Queue<Integer> queue = new LinkedList<>();
-
-        for(int i=0;i<adj_list.size();i++){
-            if(in_degree[i] == 0){
-                queue.add(i);
+                if(indegree[v] == 0)q.add(v);
             }
         }
 
-        // bfs
-        while(!queue.isEmpty()){
-            int u = queue.poll();
-
-            for(int v : adj_list.get(u)){
-                in_degree[v]--;
-
-                if(in_degree[v] == 0)queue.add(v);
-            }
-
-            topo.add(u);
-        }
+        return stack.size() == numCourses ? true : false;
     }
 }
