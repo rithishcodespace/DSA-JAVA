@@ -1,61 +1,61 @@
-// floyd warshall
+// using floyd-warshall create distance matrix, and find citie's that can reach small no.of cities within threshold distance
 
 class Solution {
     public int findTheCity(int n, int[][] edges, int distanceThreshold) {
-        int city = 0, minCount = Integer.MAX_VALUE;
+        // create adj matrix
         int[][] distance = new int[n][n];
 
-        // fill all pairs with max
-        for(int i=0;i<n;i++){
+        for(int i=0;i<n;i++){ 
             Arrays.fill(distance[i], Integer.MAX_VALUE);
         }
 
-        // create adj list
-
-        for(int[] edge : edges){
-            int u = edge[0];
-            int v = edge[1];
-            int d = edge[2];
-
-            distance[u][v] = d;
-            distance[v][u] = d;
-        }
-
-        // fill 0, if both are same
-        for(int i=0;i<n;i++){
+        for(int i=0;i<n;i++){ // [i][i]
             distance[i][i] = 0;
         }
 
-        // pass through every nodes
-        for(int i=0;i<n;i++){
-            pass(distance, i);
+        for(int[] edge : edges){
+            int u = edge[0], v = edge[1], dist = edge[2];
+
+            distance[u][v] = dist;
+            distance[v][u] = dist;
         }
 
-        // for each node count how much cities can be reached
+        // pass through every node
+        for(int i=0;i<n;i++){
+            pass(i, distance);
+        }
+
+        // find the node that travelled less cities (if more pick the min number city)
+        int minCity = -1, Mincount = Integer.MAX_VALUE;
         for(int i=0;i<n;i++){
             int count = 0;
             for(int j=0;j<n;j++){
-                if(distance[i][j] != Integer.MIN_VALUE && distance[i][j] <= distanceThreshold){
+                if(i != j && distance[i][j] <= distanceThreshold){
                     count++;
                 }
             }
-
-            if(count <= minCount){
-                minCount = count;
-                city = i;
+            if(Mincount >= count){
+                Mincount = count;
+                minCity = i;
             }
         }
 
-        return city;
+        return minCity;
     }
-    public void pass(int[][] distance, int node){
+    public void pass(int v,int[][] distance){
         for(int i=0;i<distance.length;i++){
             for(int j=0;j<distance.length;j++){
-                if(distance[i][node] != Integer.MAX_VALUE && distance[node][j] != Integer.MAX_VALUE){
-                    int newDistance = distance[i][node] + distance[node][j];
-                    distance[i][j] = Math.min(distance[i][j], newDistance);
+                if(distance[i][v] != Integer.MAX_VALUE && distance[v][j] != Integer.MAX_VALUE){
+                    int newDistance = distance[i][v] + distance[v][j];
+                    if(newDistance < distance[i][j]){
+                        distance[i][j] = newDistance;
+                    }
                 }
             }
         }
     }
+}
+
+class Element{
+
 }
