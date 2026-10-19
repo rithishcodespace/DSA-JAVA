@@ -1,70 +1,43 @@
-// minimum spanning tree - kruskal algo
+// edge weights between 2 nodes is the manhatten distance
 
-// v -> points[v][0], points[v][0]
+// prims algo
+// - start with any node, push it into heap
+// - pop, if visited skip, else
+// - make it visited, sum edge weight from it's parentt to it
+// - insert its neighbours
 
 class Solution {
     public int minCostConnectPoints(int[][] points) {
-        int mst = 0, edgesUsed = 0;
+        int sum = 0;
 
-        int[] size = new int[points.length];
-        int[] parent = new int[points.length];
+        PriorityQueue<int[]> minHeap = new PriorityQueue<>((a,b) -> a[1]-b[1]);
+        minHeap.add(new int[]{0, 0}); // ( node, distance )
 
-        for(int i=0;i<points.length;i++){
-            size[i] = 1;
-            parent[i] = i;
-        }
+        int[] visited = new int[points.length];
 
-        List<int[]> edges = new ArrayList<>();
+        while(!minHeap.isEmpty()){
+            int[] point = minHeap.poll();
 
-        for(int i=0;i<points.length;i++){
-            for(int j=i+1;j<points.length;j++){
-                int distance = Math.abs(points[i][0] - points[j][0]) + Math.abs(points[i][1] - points[j][1]);
-                edges.add(new int[]{i, j, distance});
+            int node = point[0], dist = point[1];
+
+            if(visited[node] == 0){
+                visited[node] = 1;
+
+                sum += dist;
+
+                // add it's neighbours
+                for(int i=0;i<points.length;i++){
+                    if(visited[i] == 0){
+                        int x1 = points[node][0], y1 = points[node][1];
+                        int x2 = points[i][0], y2 = points[i][1];
+
+                        int manhatten = Math.abs(x1-x2) + Math.abs(y1-y2);
+                        minHeap.add(new int[]{i, manhatten});
+                    }
+                }
             }
         }
 
-        Collections.sort(edges, (a,b) -> a[2] - b[2]);
-
-        for(int[] edge : edges){
-            int u = edge[0];
-            int v = edge[1];
-            int d = edge[2];
-
-            int pu = find(u, parent);
-            int pv = find(v, parent);
-
-            if(pu != pv){
-                mst += d;
-                edgesUsed++;
-
-                union(pu, pv, parent, size);
-            }
-
-            if(edgesUsed == points.length-1)break;
-        }
-
-        return mst;
-    }
-    public int find(int node, int[] parent){
-        if(parent[node] != node){
-            parent[node] = find(parent[node], parent); // path compression
-        }
-
-        return parent[node];
-    }
-    public void union(int u, int v, int[] parent, int[] size){
-        int pu = find(u, parent);
-        int pv = find(v, parent);
-
-        if(pu == pv)return;
-
-        if(size[pu] > size[pv]){
-            parent[pv] = pu;
-            size[pu] += size[pv];
-        }
-        else{
-            parent[pu] = pv;
-            size[pv] += size[pu];
-        }
+        return sum;
     }
 }
