@@ -1,59 +1,60 @@
-// tarjans algo
+// tarjans
 
-// find time of insertion, lowest insertion time
-// tin - time when the node is visited
-// low - lowest tin of all adjacent node, except parent node
+// tin - time of insertion (time when dfs reached this node)
+// low = lowest time of insertion (min of low among it's adjacent nodes, except parent node)
+
+// if (parent[tin] < child[low]) -> it is a bridge, since child has no way to reach father node
 
 class Solution {
+
+    List<List<Integer>> bridges = new ArrayList<>();
+
     public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
-        // build adj list
+        // create adj list
         List<List<Integer>> adj = new ArrayList<>();
         for(int i=0;i<n;i++)adj.add(new ArrayList<>());
-        for(List<Integer> connection : connections){
-            int u = connection.get(0);
-            int v = connection.get(1);
+        for(List<Integer> edge : connections){
+            int u = edge.get(0), v = edge.get(1);
 
             adj.get(u).add(v);
             adj.get(v).add(u);
         }
 
-        // dfs with alterations
+        // tarjans
         int[] tin = new int[n];
         int[] low = new int[n];
         int[] visited = new int[n];
-        List<List<Integer>> bridges = new ArrayList<>();
 
         for(int i=0;i<n;i++){
             if(visited[i] == 0){
-                dfs(i, 0, -1, tin, low, visited, adj, bridges);
+                dfs(i, -1, 0, tin, low, adj, visited);
             }
         }
 
         return bridges;
     }
-    public void dfs(int u, int parent, int time, int[] tin, int[] low, int[] visited, List<List<Integer>> adj, List<List<Integer>> bridge){
+
+    public void dfs(int u, int parent, int time, int[] tin, int[] low, List<List<Integer>> adj, int[] visited){
+        tin[u] = low[u] = time++;
         visited[u] = 1;
-        
-        tin[u] = low[u] = time++; // time should be globally unique
 
         for(int v : adj.get(u)){
-            if(v == parent)continue;
-
+            if(v == parent)continue; // since parent -- child is only to for bridge prediction (done via recursion
+        
             if(visited[v] == 0){
-                dfs(v, u, time, tin, low, visited, adj, bridge);
+                dfs(v, u, time, tin, low, adj, visited);
 
                 // my all adj nodes are visted, now decide which to choose as low for u
                 low[u] = Math.min(low[u], low[v]);
 
-                // check whether u-v is a bridge
+                // now check whether u -- v is a bridge
                 if(tin[u] < low[v]){
-                    bridge.add(Arrays.asList(u,v));
+                    bridges.add(Arrays.asList(u,v));
                 }
             }
-            else{
+            else{ // since neigh visited, use it's low to update current low
                 low[u] = Math.min(low[u], low[v]);
             }
         }
-
     }
 }
