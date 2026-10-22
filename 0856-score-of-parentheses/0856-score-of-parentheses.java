@@ -17,7 +17,7 @@ class Solution {
                 int value = 1;
 
                 if(inside >= 1){
-                    value = value*2;
+                    value = inside*2;
                 }
 
                 int parent=0;
