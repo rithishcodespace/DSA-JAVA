@@ -1,9 +1,9 @@
-// we remember the parent level using the integers inside stack
+// we track the parent level using integers inside stack
+// if the current value is >= 1 -> val*2 -> pop the parent (remove parent bracket) and add it to score and push to stack
 
 class Solution {
     public int scoreOfParentheses(String s) {
         Stack<Integer> stack = new Stack<>();
-        stack.push(0); // parent level - answer will be accumulated here
 
         for(int i=0;i<s.length();i++){
             char br = s.charAt(i);
@@ -14,17 +14,19 @@ class Solution {
             else{
                 int inside = stack.pop();
 
-                int value = 0;
+                int value = 1;
 
-                if(inside == 0){
-                    value = 1;
-                }
-                else if(inside >= 1){
-                    value = inside*2;
+                if(inside >= 1){
+                    value = value*2;
                 }
 
-                int parent = stack.pop();
-                stack.push(parent+value);
+                int parent=0;
+
+                if(!stack.isEmpty()){
+                    parent = stack.pop();
+                }
+
+                stack.push(value+parent);
             }
         }
 
